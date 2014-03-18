@@ -2,29 +2,13 @@ $(document).ready(function(){
 
   var sendPosts = function(message){
     $.ajax({
-    url: 'http://127.0.0.1:3000',
-    type: 'POST',
-    data: message,
-    contentType: 'text/plain',
-    success: function (data) {
-      console.log(data);
-      console.log('chatterbox: Message sent');
-    },
-    error: function (data) {
-      console.error('chatterbox: Failed to send message');
-    }
-  });
-};
-
-  var getPosts = function(){
-    
-    $.ajax({
       url: 'http://127.0.0.1:3000',
-      type: 'GET',
-      dataType: 'json',
+      type: 'POST',
+      data: message,
+      contentType: 'text/plain',
       success: function (data) {
-        // console.log(data);
-        displayPosts(data);
+        console.log(data);
+        console.log('chatterbox: Message sent');
       },
       error: function (data) {
         console.error('chatterbox: Failed to send message');
@@ -32,36 +16,35 @@ $(document).ready(function(){
     });
   };
 
-  var displayPosts = function(data){
-    console.log(data);
-    console.log(typeof data);
-    console.log(typeof data[0]);
-    // var parsedData = JSON.parse(data[0]);
-    var messages = [];
-    var roomNames = {};
-    var rooms = [];
-    // console.log(typeof data);
-    for (var i = 0; i < data.length; i++) {
-      //populating room name object
-      if(data[i]['roomname']){
-        roomNames[data[i]['roomname']] = true;
+  var getPosts = function(){  
+    $.ajax({
+      url: 'http://127.0.0.1:3000',
+      type: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        displayPosts(data);
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to send message');
       }
-      var username = data[i]['username'];
-      var text = data[i]['text'];
-      if(username !== undefined || text !== undefined){
-        messages.push('<p class = "'+ data[i]['roomname'] +'">' + data[i]['roomname'] + username + ': ' + text+ '</p>');
+    });
+  };
+  var latestID = 0;
+  var displayPosts = function(data){
+    var messages = [];
+    
+    for (var i = 0; i < data.length; i++) {
+      if(data[i]['messageId'] > latestID){
+        var username = data[i]['username'];
+        var text = data[i]['text'];
+        if(username !== undefined || text !== undefined){
+          messages.push('<p>' + username + ': ' + text+ '</p>');
+        }
+        latestID = data[i]['messageId'];
       }
     }
 
-    for(var keys in roomNames){
-      rooms.push("<li>"+keys+"</li>");
-    }
     $('.posts').prepend(messages);
-    $('.rooms ul').html(rooms);
-    var currentRoom = $('#currentRoom').text();
-    if(currentRoom){
-      $('p[class!='+ currentRoom +']').hide();
-    }
   };
 
   var validateData = function(data){
@@ -72,7 +55,6 @@ $(document).ready(function(){
         return true;
       }
     }
-
   };
 
   var newUser;
@@ -86,27 +68,11 @@ $(document).ready(function(){
   $('#send').on('click',function(){
     var message = $('#message').val();
     var messageObj = {
+      messageId: 1,
       username: newUser,
       text: message,
-      roomname: $('#currentRoom').text() || undefined
     };
-    sendPosts(JSON.stringify(messageObj));
-
-    console.log(JSON.stringify(messageObj));
-  });
-
-  $('.rooms ul').on('click', 'li', function(){
-    console.log($(this).text());
-    $('#currentRoom').text($(this).text()).show();
-    $('.rooms ul').hide();
-    $('.newRoom').hide();
-    $('#back').show();
-    var currentRoomName = $(this).text();
-    $('p').each(function(currentRoomName){
-      if(!$(this).hasClass(currentRoomName)){
-        $(this).hide();
-      }
-    });
+      sendPosts(JSON.stringify(messageObj));
   });
 
   $('#back').on('click', function(){
@@ -117,16 +83,7 @@ $(document).ready(function(){
     $('p').show();
   });
 
-  $('#create').on('click', function(){
-    $('#currentRoom').text($('#newRoom').val());
-   $('.rooms ul').hide();
-    $('.newRoom').hide();
-    $('#back').show();
-
-  });
-
   getPosts();
-
-  setTimeout(getPosts, 15000)
+  setInterval(getPosts, 4000)
 
 });

@@ -1,5 +1,6 @@
 
 var dataStore = [];
+var messageId = 2;
 
 exports.handleRequest = function(request, response) {
 
@@ -13,8 +14,7 @@ exports.handleRequest = function(request, response) {
 
   if(request.method ==="GET"){
     response.writeHead(statusCode, headers);
-    var stringifiedStr = (dataStore.length === 0) ? 'empty': JSON.stringify(dataStore);
-    console.log(stringifiedStr);
+    var stringifiedStr = (dataStore.length === 0) ? '{}' : JSON.stringify(dataStore);
     response.end(stringifiedStr);
 
   } else if(request.method ==="POST"){
@@ -28,8 +28,9 @@ exports.handleRequest = function(request, response) {
     
     request.on('end', function(){
       var parsedStr = JSON.parse(str);
-      dataStore.push(parsedStr);
-      console.log('dataStore: ',  dataStore);
+      parsedStr['messageId'] = messageId;
+      dataStore.unshift(parsedStr);
+      messageId++;
       response.end("POST worked");
     });
   }
