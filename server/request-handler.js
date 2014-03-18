@@ -1,3 +1,6 @@
+
+var dataStore = [];
+
 exports.handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -10,7 +13,9 @@ exports.handleRequest = function(request, response) {
 
   if(request.method ==="GET"){
     response.writeHead(statusCode, headers);
-    response.end("GET worked");
+    var stringifiedStr = (dataStore.length === 0) ? 'empty': JSON.stringify(dataStore);
+    console.log(stringifiedStr);
+    response.end(stringifiedStr);
 
   } else if(request.method ==="POST"){
     var str = '';
@@ -23,7 +28,8 @@ exports.handleRequest = function(request, response) {
     
     request.on('end', function(){
       var parsedStr = JSON.parse(str);
-      console.log(parsedStr);
+      dataStore.push(parsedStr);
+      console.log('dataStore: ',  dataStore);
       response.end("POST worked");
     });
   }

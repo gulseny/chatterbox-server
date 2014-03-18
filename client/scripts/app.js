@@ -21,7 +21,9 @@ $(document).ready(function(){
     $.ajax({
       url: 'http://127.0.0.1:3000',
       type: 'GET',
+      dataType: 'json',
       success: function (data) {
+        // console.log(data);
         displayPosts(data);
       },
       error: function (data) {
@@ -31,6 +33,10 @@ $(document).ready(function(){
   };
 
   var displayPosts = function(data){
+    console.log(data);
+    console.log(typeof data);
+    console.log(typeof data[0]);
+    // var parsedData = JSON.parse(data[0]);
     var messages = [];
     var roomNames = {};
     var rooms = [];
@@ -121,6 +127,6 @@ $(document).ready(function(){
 
   getPosts();
 
-  // setInterval(getPosts, 4000)
+  setTimeout(getPosts, 15000)
 
 });
