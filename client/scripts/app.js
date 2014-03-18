@@ -1,18 +1,15 @@
 $(document).ready(function(){
 
-var timecode = 0;
-var oldTimecode;
-var flag = true;
-
   var sendPosts = function(message){
     $.ajax({
     // always use this url
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: 'http://127.0.0.1:3000',
     type: 'POST',
-    data: JSON.stringify(message),
+    data: message,
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
+      // console.log(data);
     },
     error: function (data) {
       // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -24,12 +21,15 @@ var flag = true;
   var getPosts = function(){
     
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
+      url: 'http://127.0.0.1:3000',
       type: 'GET',
       success: function (data) {
-        displayPosts(data.results);
+        displayPosts(data);
+        // var parsedData = $.parseJSON(data);
+        // console.log(parsedData);
       },
       error: function (data) {
+        // console.log(data);
         // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message');
       }
@@ -40,26 +40,19 @@ var flag = true;
     var messages = [];
     var roomNames = {};
     var rooms = [];
-    oldTimecode = timecode;
-    timecode = data[0]['createdAt'];
+    // console.log(typeof data);
     for (var i = 0; i < data.length; i++) {
       //populating room name object
       if(data[i]['roomname']){
         roomNames[data[i]['roomname']] = true;
       }
-      if(flag){
-        var username = (data[i]['username']) ? data[i]['username'] : "Guest";
-        var text = (validateData(data[i]['text'])) ? data[i]['text'] : "ILLEGAL XSS";
+      var username = data[i]['username'];
+      var text = data[i]['text'];
+      if(username !== undefined || text !== undefined){
         messages.push('<p class = "'+ data[i]['roomname'] +'">' + data[i]['roomname'] + username + ': ' + text+ '</p>');
-      }else{
-        if(data[i]['createdAt'] > oldTimecode){
-          var username = (data[i]['username']) ? data[i]['username'] : "Guest";
-          var text = (validateData(data[i]['text'])) ? data[i]['text'] : "ILLEGAL XSS";
-          messages.push('<p class = "'+ data[i]['roomname'] +'">' + data[i]['roomname'] + username + ': ' + text+ '</p>');
-          flag = false;
-        }
       }
     }
+
     for(var keys in roomNames){
       rooms.push("<li>"+keys+"</li>");
     }
@@ -98,6 +91,8 @@ var flag = true;
       roomname: $('#currentRoom').text() || undefined
     };
     sendPosts(messageObj);
+
+    // console.log(messageObj);
   });
 
   $('.rooms ul').on('click', 'li', function(){
@@ -132,6 +127,6 @@ var flag = true;
 
   getPosts();
 
-  setInterval(getPosts, 4000)
+  // setInterval(getPosts, 4000)
 
 });
