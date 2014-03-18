@@ -2,17 +2,15 @@ $(document).ready(function(){
 
   var sendPosts = function(message){
     $.ajax({
-    // always use this url
     url: 'http://127.0.0.1:3000',
     type: 'POST',
     data: message,
-    contentType: 'application/json',
+    contentType: 'text/plain',
     success: function (data) {
+      console.log(data);
       console.log('chatterbox: Message sent');
-      // console.log(data);
     },
     error: function (data) {
-      // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
       console.error('chatterbox: Failed to send message');
     }
   });
@@ -25,12 +23,8 @@ $(document).ready(function(){
       type: 'GET',
       success: function (data) {
         displayPosts(data);
-        // var parsedData = $.parseJSON(data);
-        // console.log(parsedData);
       },
       error: function (data) {
-        // console.log(data);
-        // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message');
       }
     });
@@ -90,9 +84,9 @@ $(document).ready(function(){
       text: message,
       roomname: $('#currentRoom').text() || undefined
     };
-    sendPosts(messageObj);
+    sendPosts(JSON.stringify(messageObj));
 
-    // console.log(messageObj);
+    console.log(JSON.stringify(messageObj));
   });
 
   $('.rooms ul').on('click', 'li', function(){
