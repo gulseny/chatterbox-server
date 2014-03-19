@@ -1,5 +1,5 @@
 body {
-    background: #eee;
+    background: #777;
     text-align: center;
     padding: 0 25px;
     font-family: arial, sans-serif;
@@ -96,5 +96,15 @@ form input[type=text] {
 
 #back{
     display: none;
+}
+
+.user{
+    color: #444;
+    font-weight: bold;
+}
+
+.msg{
+    color: red;
+    font-style: italic;
 }
 

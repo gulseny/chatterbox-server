@@ -38,7 +38,7 @@ $(document).ready(function(){
         var username = data[i]['username'];
         var text = data[i]['text'];
         if(username !== undefined || text !== undefined){
-          messages.push('<p>' + username + ': ' + text+ '</p>');
+          messages.push('<p><span class = "user">' + username + '</span>'+': '+'<span class = "msg">' + text+ '</span>' +'</p>');
         }
         latestID = data[i]['messageId'];
       }
